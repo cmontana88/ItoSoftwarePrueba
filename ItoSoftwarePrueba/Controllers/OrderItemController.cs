@@ -135,7 +135,7 @@ namespace ItoSoftwarePrueba.Controllers
                 
             }
 
-            return View("Index");
+            return RedirectToAction("Index", "OrderItem");
         }
     }
 }
