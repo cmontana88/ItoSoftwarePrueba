@@ -1,0 +1,113 @@
+﻿@model IEnumerable<ItoSoftwarePrueba.Models.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Chekout</h1>
+</div>
+
+<div style="padding-bottom:15px;">
+    <div class="card">
+        <div class="card-body">
+            <h4>Datos del Cliente</h4>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Cliente</label>
+                        @Html.TextBox("Cliente", ViewBag.Cliente.CustomerName, "", new { disabled = "disabled", @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput1">Telefono</label>
+                        @Html.TextBox("Telefono", ViewBag.Cliente.Phone, "", new { disabled = "disabled", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="padding-bottom:15px;">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="text-center">Productos</h4>
+            <table class="table">
+                <tr>
+                    <th class="col-3 text-center">
+                        @Html.DisplayNameFor(model => model.ProductName)
+                    </th>
+                    <th class="col-3 text-center">
+                        @Html.DisplayNameFor(model => model.UnitPrice)
+                    </th>
+                    <th class="col-2 text-center">
+                        @Html.DisplayNameFor(model => model.Cantidad)
+                    </th>
+                    <th class="col-3 text-center">
+                        @Html.DisplayNameFor(model => model.Total)
+                    </th>
+                    <th class="col-1"></th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductName)
+                        </td>
+                        <td class="text-right">
+                            @Html.DisplayFor(modelItem => item.UnitPrice)
+                        </td>
+                        <td class="text-right">
+                            @Html.DisplayFor(modelItem => item.Cantidad)
+                        </td>
+                        <td class="text-right">
+                            @Html.DisplayFor(modelItem => item.Total)
+                        </td>
+                        <td></td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+<div style="padding-bottom:15px;">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">                
+                <div class="col-5 offset-7">
+                    <h5 class="text-center">Totales</h5>
+                    <table class="table">
+                        <tr>
+                            <th class="col-6 text-center">
+                                Concepto
+                            </th>
+                            <th class="col-6 text-center">
+                                Valor
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>Total Items</td>
+                            <td class="text-right">@Model.ToList().Count</td>
+                        </tr>
+                        <tr>
+                            <td>Total Orden</td>
+                            <td class="text-right">@Model.ToList().Select(p => p.Total).Sum()</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="row justify-content-around">
+        <div class="col-2">
+            @Html.ActionLink("Guardar", "GuardarOrden", "OrderItem", null, new { id = "checkout", @class = "btn btn-success" })
+        </div>
+    </div>
+</div>

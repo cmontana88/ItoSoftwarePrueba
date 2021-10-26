@@ -1,0 +1,246 @@
+﻿@model IEnumerable<ItoSoftwarePrueba.Models.ProductViewModel>
+
+@{
+    ViewData["Title"] = "Nueva Orden";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Nueva Orden</h1>
+</div>
+
+
+    <div style="padding-bottom:15px;">
+        <div class="card">
+            <div class="card-body">
+                <h4>Datos del Cliente</h4>
+                <div class="row">
+                    <div class="col-5">
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Cliente</label>
+                            @Html.DropDownList("SelectCliente", ViewBag.Clientes, "- Seleccion un Cliente -", new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Telefono</label>
+                            @Html.TextBox("Telefono", null, "", new { disabled = "disabled", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding-bottom:15px;">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="text-center">Productos</h4>
+                <table class="table">
+                    <tr>
+                        <th class="col-3 text-center">
+                            @Html.DisplayNameFor(model => model.ProductName)
+                        </th>
+                        <th class="col-3 text-center">
+                            @Html.DisplayNameFor(model => model.UnitPrice)
+                        </th>
+                        <th class="col-2 text-center">
+                            @Html.DisplayNameFor(model => model.Cantidad)
+                        </th>
+                        <th class="col-3 text-center">
+                            @Html.DisplayNameFor(model => model.Total)
+                        </th>
+                        <th class="col-1"></th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProductName)
+                            </td>
+                            <td class="text-right">
+                                @Html.DisplayFor(modelItem => item.UnitPrice)
+                            </td>
+                            <td class="text-right">
+                                @Html.DisplayFor(modelItem => item.Cantidad)
+                            </td>
+                            <td class="text-right">
+                                @Html.DisplayFor(modelItem => item.Total)
+                            </td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right">
+                            <button type="button" id="agregar" class="btn btn-info" data-toggle="modal" data-target="#agregarModal"> + </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="row justify-content-around">
+            <div class="col-2">                
+                @Html.ActionLink("checkout", "Checkout", "OrderItem", new { clienteId = "_clienteId" }, new { id = "checkout", @class = "btn btn-success" })
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-lg" id="agregarModal" tabindex="-1" role="dialog" aria-labelledby="agregarModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header alert-primary">
+                    <h5 class="modal-title" id="exampleModalLabel">Agregar Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="exampleFormControlInput1">Producto</label>
+                                @Html.DropDownList("SelectProduct", ViewBag.Productos, "- Seleccion un producto -", new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="exampleFormControlInput1">Precio</label>
+                                @Html.TextBox("Precio", null, "", new { disabled = "disabled", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="exampleFormControlInput1">Cantidad</label>
+                                @Html.TextBox("Cantidad", null, "", new { placeholder = "Cantidad", @class = "form-control", @type = "number" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="addProduct" class="btn btn-primary">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts{
+        <script>
+        $(function () {
+            $('#SelectProduct').on('change', '', function (e) {
+                var optionSelected = $(this).find("option:selected");
+                var productId = optionSelected.val();
+
+                if (productId != '') {
+                    $.ajax({
+                        type: "POST",
+                        url: "/OrderItem/GetProduct/?productId=" + productId,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            $('#Precio').val(response.unitPrice);
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+
+                        }
+                    });
+                }
+                else {
+                    $('#Precio').val('');
+                }
+            });
+        })
+
+        
+            
+
+
+        $(function () {
+            $('#SelectCliente').on('change', '', function (e) {
+                var optionSelected = $(this).find("option:selected");
+                var clienteId = optionSelected.val();
+
+                $('#checkout').attr('href', function () {
+                    return this.href.replace('_clienteId', clienteId);
+                });
+
+                if (clienteId != '') {
+                    $.ajax({
+                        type: "POST",
+                        url: "/OrderItem/GetCliente/?clienteId=" + clienteId,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+                            $('#Telefono').val(response.phone);
+                        },
+                        failure: function (response) {
+
+                        },
+                        error: function (response) {
+
+                        }
+                    });
+                }
+                else {
+                    $('#Telefono').val('');
+                    $('#checkout').attr('href', function () {
+                        return this.href.replace('_clienteId', 0);
+                    });
+                }
+            });
+        })
+
+        $(function () {
+            $('agregar').on('click', function () {
+                $('#agregarModal').modal('show')
+            });
+        })
+
+        $(function () {
+            $('#addProduct').on('click', function () {
+                var optionSelected = $('#SelectProduct').find("option:selected");
+                var productId = optionSelected.val();
+
+                var optionSelected2 = $('#SelectCliente').find("option:selected");
+                var clienteId = optionSelected2.val();
+                var telefono = $('#Telefono').val();
+
+                var product = {
+                    "ProductId": productId,
+                    "Cantidad": $('#Cantidad').val()
+                };
+
+                $.ajax(
+                {
+                    url: '@Url.Action("AgregarProducto", "OrderItem")',
+                    type: "Post",
+                    async: false,
+                    dataType: "html",
+                    contentType: "application/json;charset=utf-8",
+                    data: JSON.stringify(product),
+                    contentType: "application/json;charset=utf-8",
+                    success: function (data) {
+                        $("body").html(data);
+                        $('#agregarModal').modal('hide');
+                    }
+                });
+
+                $("#SelectCliente").val(clienteId).change();
+                $('#Telefono').val(telefono);
+                $('#checkout').attr('href', function () {
+                    return this.href.replace('_clienteId', clienteId);
+                });
+            });
+        })
+        </script>
+    }
